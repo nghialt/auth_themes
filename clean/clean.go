@@ -35,8 +35,14 @@ func New(config *auth.Config) *auth.Auth {
 	if config.Render == nil {
 		yamlBackend := yaml.New()
 		I18n := i18n.New(yamlBackend)
-		for _, gopath := range append([]string{filepath.Join(utils.AppRoot, "vendor")}, utils.GOPATH()...) {
-			filePath := filepath.Join(gopath, "src", "github.com/qor/auth_themes/clean/locales/en-US.yml")
+
+		gopaths := utils.GOPATH()
+		for i := range gopaths {
+			gopaths[i] = filepath.Join(gopaths[i], "src")
+		}
+
+		for _, gopath := range append(gopaths, filepath.Join(utils.AppRoot, "vendor")) {
+			filePath := filepath.Join(gopath, "github.com/qor/auth_themes/clean/locales/en-US.yml")
 			if content, err := ioutil.ReadFile(filePath); err == nil {
 				translations, _ := yamlBackend.LoadYAMLContent(content)
 				for _, translation := range translations {
